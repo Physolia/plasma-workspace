@@ -29,19 +29,35 @@ PlasmaCore.ColorScope {
     Connections {
         target: authenticator
         function onFailed() {
+            mainBlock.visibleScreen = MainBlock.VisibleScreen.BlankScreen;
+            graceLockTimer.restart();
+            notificationRemoveTimer.restart();
+
             root.notification = i18nd("plasma_lookandfeel_org.kde.lookandfeel","Unlocking failed");
         }
-        function onGraceLockedChanged() {
-            if (!authenticator.graceLocked) {
-                root.notification = "";
-                root.clearPassword();
-            }
+        function onSucceeded() {
+            mainBlock.visibleScreen = MainBlock.VisibleScreen.SuccessScreen;
+        }
+
+        function onPrompt(msg) {
+            mainBlock.echoOnMessageLabel.text = msg;
+            mainBlock.echoOnBox.text = "";
+            mainBlock.visibleScreen = MainBlock.VisibleScreen.PromptEchoOnScreen;
+            mainBlock.echoOnBox.forceActiveFocus();
+        }
+        function onPromptForSecret(msg) {
+            mainBlock.echoOffMessageLabel.text = msg;
+            mainBlock.echoOffBox.text = "";
+            mainBlock.visibleScreen = MainBlock.VisibleScreen.PromptEchoOffScreen;
+            mainBlock.echoOffBox.forceActiveFocus();
         }
         function onMessage(msg) {
-            root.notification = msg;
+            mainBlock.infoMessageLabel.text = msg;
+            mainBlock.visibleScreen = MainBlock.VisibleScreen.InfoMsgScreen;
         }
         function onError(err) {
-            root.notification = err;
+            mainBlock.errorMessageLabel.text = err;
+            mainBlock.visibleScreen = MainBlock.VisibleScreen.ErrorMsgScreen;
         }
     }
 
@@ -77,6 +93,7 @@ PlasmaCore.ColorScope {
     MouseArea {
         id: lockScreenRoot
 
+        property bool calledUnlock: false
         property bool uiVisible: false
         property bool blockUI: mainStack.depth > 1 || mainBlock.mainPasswordBox.text.length > 0 || inputPanel.keyboardActive
 
@@ -87,12 +104,15 @@ PlasmaCore.ColorScope {
         hoverEnabled: true
         drag.filterChildren: true
         onPressed: uiVisible = true;
-        onPositionChanged: uiVisible = true;
         onUiVisibleChanged: {
             if (blockUI) {
                 fadeoutTimer.running = false;
             } else if (uiVisible) {
                 fadeoutTimer.restart();
+                if (!calledUnlock) {
+                    calledUnlock = true
+                    authenticator.tryUnlock()
+                }
             }
         }
         onBlockUIChanged: {
@@ -123,6 +143,20 @@ PlasmaCore.ColorScope {
                 if (!lockScreenRoot.blockUI) {
                     lockScreenRoot.uiVisible = false;
                 }
+            }
+        }
+        Timer {
+            id: notificationRemoveTimer
+            interval: 3000
+            onTriggered: {
+                root.notification = "";
+            }
+        }
+        Timer {
+            id: graceLockTimer
+            interval: 3000
+            onTriggered: {
+                authenticator.tryUnlock();
             }
         }
 
@@ -211,6 +245,17 @@ PlasmaCore.ColorScope {
             }
         }
 
+        PlasmaComponents3.Label {
+            id: clickMessageLabel
+            text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Click mouse or press any key to unlock")
+            visible: !lockScreenRoot.uiVisible
+            font.pointSize: PlasmaCore.Theme.defaultFont.pointSize + 2
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: clock.y + clock.height + (PlasmaCore.Theme.defaultFont.pointSize + 2) * 3
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+        }
+
         StackView {
             id: mainStack
             anchors {
@@ -232,8 +277,12 @@ PlasmaCore.ColorScope {
                 Stack.onStatusChanged: {
                     // prepare for presenting again to the user
                     if (Stack.status == Stack.Activating) {
-                        mainPasswordBox.remove(0, mainPasswordBox.length)
-                        mainPasswordBox.focus = true
+                        if (root.interfaceVersion < 3) {
+                            mainPasswordBox.remove(0, mainPasswordBox.length)
+                            mainPasswordBox.focus = true
+                        } else {
+                            root.notification = ""
+                        }
                     }
                 }
                 userListModel: users
@@ -249,9 +298,12 @@ PlasmaCore.ColorScope {
                     return text
                 }
 
-                onLoginRequest: {
-                    root.notification = ""
-                    authenticator.tryUnlock(password)
+                onPromptEchoOnResult: {
+                    authenticator.respond(value)
+                }
+
+                onPromptEchoOffResult: {
+                    authenticator.respond(value)
                 }
 
                 actionItems: [
@@ -527,7 +579,11 @@ PlasmaCore.ColorScope {
                 onClicked: {
                     // Otherwise the password field loses focus and virtual keyboard
                     // keystrokes get eaten
-                    mainBlock.mainPasswordBox.forceActiveFocus();
+                    if (mainBlock.visibleScreen == MainBlock.VisibleScreen.PromptEchoOnScreen) {
+                        mainBlock.echoOnBox.forceActiveFocus();
+                    } else if (mainBlock.visibleScreen == MainBlock.VisibleScreen.PromptEchoOffScreen) {
+                        mainBlock.echoOffBox.forceActiveFocus();
+                    }
                     inputPanel.showHide()
                 }
 
@@ -557,14 +613,6 @@ PlasmaCore.ColorScope {
             }
 
             Battery {}
-        }
-    }
-
-    Component.onCompleted: {
-        // version support checks
-        if (root.interfaceVersion < 1) {
-            // ksmserver of 5.4, with greeter of 5.5
-            root.viewVisible = true;
         }
     }
 }
