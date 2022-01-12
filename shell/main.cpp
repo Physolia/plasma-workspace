@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
     } else {
         QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     }
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
     QQuickWindow::setDefaultAlphaBuffer(true);
 
