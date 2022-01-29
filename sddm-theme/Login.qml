@@ -148,6 +148,8 @@ SessionManagementScreen {
             }
 
             onClicked: startLogin()
+            Keys.onEnterPressed: clicked()
+            Keys.onReturnPressed: clicked()
         }
     }
 }

@@ -107,6 +107,8 @@ SessionManagementScreen {
             icon.name: LayoutMirroring.enabled ? "go-previous" : "go-next"
 
             onClicked: startLogin()
+            Keys.onEnterPressed: clicked()
+            Keys.onReturnPressed: clicked()
         }
     }
 }
