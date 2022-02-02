@@ -171,7 +171,6 @@ PlasmaExtras.Representation {
                     Layout.fillWidth: true
                     // additional margin, because the bottom of PowerProfileItem
                     // and the top of BatteryItem are more dense.
-                    Layout.bottomMargin: PlasmaCore.Units.smallSpacing * 100
                 }
             }
 
