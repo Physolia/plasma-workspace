@@ -52,6 +52,8 @@ FocusScope {
 
     default property alias _children: innerLayout.children
 
+    signal userSelected()
+
     UserList {
         id: userListView
         visible: showUserList && y > 0
@@ -61,6 +63,8 @@ FocusScope {
             right: parent.right
         }
         fontSize: root.fontSize
+        // bubble up the signal
+        onUserSelected: root.userSelected()
     }
 
     //goal is to show the prompts, in ~16 grid units high, then the action buttons

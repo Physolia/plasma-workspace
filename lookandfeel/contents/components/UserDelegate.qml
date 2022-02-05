@@ -172,8 +172,10 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
 
-        onClicked: wrapper.clicked();
+        onClicked: wrapper.clicked()
     }
+
+    Keys.onSpacePressed: wrapper.clicked()
 
     Accessible.name: name
     Accessible.role: Accessible.Button
