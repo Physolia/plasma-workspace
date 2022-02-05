@@ -118,11 +118,22 @@ SessionManagementScreen {
             id: loginButton
             Accessible.name: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Log In")
             Layout.preferredHeight: passwordBox.implicitHeight
-            Layout.preferredWidth: text.length === 0 ? loginButton.Layout.preferredHeight : -1
+            Layout.preferredWidth: Layout.preferredHeight
 
-            icon.name: text.length === 0 ? (root.LayoutMirroring.enabled ? "go-previous" : "go-next") : ""
+            icon.name: root.LayoutMirroring.enabled ? "go-previous" : "go-next"
 
-            text: root.showUsernamePrompt || userList.currentItem.needsPassword ? "" : i18n("Log In")
+            // default state is icon-only
+            states: State {
+                name: "text-only"
+                when: !passwordBox.visible
+                PropertyChanges {
+                    target: loginButton
+                    icon.name: ""
+                    text: i18n("Log In")
+                    Layout.preferredWidth: -1
+                }
+            }
+
             onClicked: startLogin()
         }
     }
