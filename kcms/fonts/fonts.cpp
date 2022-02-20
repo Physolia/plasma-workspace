@@ -86,6 +86,11 @@ FontsAASettings *KFonts::fontsAASettings() const
     return m_data->fontsAASettings();
 }
 
+bool KFonts::isPlatformX11() const
+{
+    return KWindowSystem::isPlatformX11();
+}
+
 QAbstractItemModel *KFonts::subPixelOptionsModel() const
 {
     return m_subPixelOptionsModel;
