@@ -593,9 +593,8 @@ void PanelView::resizePanel()
         const int maxSize = qMin(m_maxLength, m_screenToFollow->size().width() - m_offset);
         targetMinSize = QSize(minSize, totalThickness());
         targetMaxSize = QSize(maxSize, totalThickness());
-        targetSize = QSize(qBound(minSize, m_contentLength, maxSize), totalThickness());
+        targetSize = QSize(std::clamp(m_contentLength, minSize, maxSize), totalThickness());
     }
-    qDebug() << targetSize;
     if (minimumSize() != targetMinSize) {
         setMinimumSize(targetMinSize);
     }
@@ -1332,7 +1331,7 @@ void PanelView::handleQmlStatusChange(QQmlComponent::Status status)
             connect(rootObject, SIGNAL(rightPaddingChanged()), this, SLOT(updatePadding()));
             connect(rootObject, SIGNAL(leftPaddingChanged()), this, SLOT(updatePadding()));
         }
-        int floatingSignal = rootObject->metaObject()->indexOfSignal(SIGNAL(floatingChanged()));
+        const int floatingSignal = rootObject->metaObject()->indexOfSignal(SIGNAL(floatingChanged()));
         if (floatingSignal >= 0) {
             connect(rootObject, SIGNAL(floatingChanged()), this, SLOT(updateFloating()));
             connect(rootObject, SIGNAL(bottomFloatingPaddingChanged()), this, SLOT(updatePadding()));
@@ -1480,8 +1479,9 @@ void PanelView::updatePadding()
 
 void PanelView::updateFloating()
 {
-    if (!rootObject())
+    if (!rootObject()) {
         return;
+    }
     if (rootObject()->property("floating").toBool()) {
         PanelShadows::self()->removeWindow(this);
     } else {
