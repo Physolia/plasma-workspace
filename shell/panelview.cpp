@@ -57,6 +57,7 @@ PanelView::PanelView(ShellCorona *corona, QScreen *targetScreen, QWindow *parent
     , m_distance(0)
     , m_thickness(30)
     , m_initCompleted(false)
+    , m_floating(false)
     , m_alignment(Qt::AlignLeft)
     , m_corona(corona)
     , m_visibilityMode(NormalPanel)
@@ -337,6 +338,26 @@ void PanelView::setDistance(int dist)
     m_distance = dist;
     Q_EMIT distanceChanged();
     positionPanel();
+}
+
+bool PanelView::floating() const
+{
+    return m_floating;
+}
+
+void PanelView::setFloating(bool floating)
+{
+    if (m_floating == floating) {
+        return;
+    }
+
+    m_floating = floating;
+    Q_EMIT floatingChanged();
+
+    config().writeEntry("floating", floating);
+    configDefaults().writeEntry("floating", floating);
+    m_corona->requestApplicationConfigSync();
+    updateFloating();
 }
 
 Plasma::Types::BackgroundHints PanelView::backgroundHints() const
@@ -634,6 +655,8 @@ void PanelView::restore()
     }
 
     setThickness(readConfigValueWithFallBack("thickness", m_thickness));
+
+    setFloating(readConfigValueWithFallBack("floating", m_floating));
 
     const QSize screenSize = m_screenToFollow->size();
     setMinimumSize(QSize(-1, -1));
@@ -1482,7 +1505,7 @@ void PanelView::updateFloating()
     if (!rootObject()) {
         return;
     }
-    if (rootObject()->property("floating").toBool()) {
+    if (rootObject()->property("floating").toBool() && m_floating) {
         PanelShadows::self()->removeWindow(this);
     } else {
         PanelShadows::self()->addWindow(this);
