@@ -2,13 +2,14 @@
     SPDX-FileCopyrightText: 2013 Marco Martin <mart@kde.org>
     SPDX-FileCopyrightText: 2014 Sebastian Kügler <sebas@kde.org>
     SPDX-FileCopyrightText: 2014 Kai Uwe Broulik <kde@privat.broulik.de>
+    SPDX-FileCopyrightText: 2022 Fushan Wen <qydwhotmail@gmail.com>
 
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-import QtQuick 2.15
-import QtQuick.Controls 2.15 as QQC2
-import QtQuick.Window 2.15
+import QtQuick 2.5
+import QtQuick.Controls 2.2 as QQC2
+import QtQuick.Window 2.2
 
 import org.kde.plasma.wallpapers.image 2.0
 
@@ -21,22 +22,34 @@ QQC2.StackView {
 
     readonly property size targetSize: Qt.size(root.width * Screen.devicePixelRatio, root.height * Screen.devicePixelRatio)
 
-    ImageBackend {
-        id: backend
-
-        image: wallpaper.configuration.Image
-        targetSize: root.targetSize
-        usedInConfig: false
-
-        onModelImageChanged: Qt.callLater(loadImage)
-        onImageChanged: wallpaper.configuration.Image = image
-    }
-
     /**
-     * e.g. used by WallpaperInterface for drag and drop
+     * e.g. used by WallpaperInterface for drag and drop, will add the parent folder of the image.
      */
     function setUrl(url) {
         backend.setUrl(url);
+    }
+
+    function action_next() {
+        backend.nextSlide();
+    }
+
+    function action_open() {
+        backend.openModelImage();
+    }
+
+    SlideshowBackend {
+        id: backend
+        targetSize: root.targetSize
+        usedInConfig: false
+
+        slidePaths: wallpaper.configuration.SlidePaths
+        slideTimer: wallpaper.configuration.SlideInterval
+        slideshowMode: wallpaper.configuration.SlideshowMode
+        slideshowFoldersFirst: wallpaper.configuration.SlideshowFoldersFirst
+        uncheckedSlides: wallpaper.configuration.UncheckedSlides
+
+        onModelImageChanged: Qt.callLater(loadImage)
+        onSlidePathsChanged: wallpaper.configuration.SlidePaths = slidePaths
     }
 
     function loadImage() {
@@ -96,5 +109,8 @@ QQC2.StackView {
 
     Component.onCompleted: {
         wallpaper.loading = true; // delays ksplash until the wallpaper has been loaded
+
+        wallpaper.setAction("open", i18nd("plasma_wallpaper_org.kde.image", "Open Wallpaper Image"), "document-open");
+        wallpaper.setAction("next", i18nd("plasma_wallpaper_org.kde.image", "Next Wallpaper Image"), "user-desktop");
     }
 }

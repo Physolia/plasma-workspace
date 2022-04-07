@@ -7,7 +7,7 @@
 
 import QtQuick 2.0
 import QtQuick.Controls.Private 1.0
-import QtQuick.Controls 2.3 as QtControls2
+import QtQuick.Controls 2.3 as QQC2
 import QtGraphicalEffects 1.0
 
 import org.kde.plasma.core 2.0 as PlasmaCore
@@ -32,20 +32,21 @@ KCM.GridDelegate {
         Kirigami.Action {
             icon.name: "document-open-folder"
             tooltip: i18nd("plasma_wallpaper_org.kde.image", "Open Containing Folder")
-            onTriggered: imageModel.openContainingFolder(index)
+            onTriggered: root.imageModel.openContainingFolder(index)
         },
         Kirigami.Action {
             icon.name: "edit-undo"
             visible: model.pendingDeletion
             tooltip: i18nd("plasma_wallpaper_org.kde.image", "Restore wallpaper")
-            onTriggered: imageModel.setPendingDeletion(index, !model.pendingDeletion)
+            onTriggered: model.pendingDeletion = false
         },
         Kirigami.Action {
             icon.name: "edit-delete"
             tooltip: i18nd("plasma_wallpaper_org.kde.image", "Remove Wallpaper")
-            visible: model.removable && !model.pendingDeletion && configDialog.currentWallpaper == "org.kde.image"
+            visible: model.removable && !model.pendingDeletion
             onTriggered: {
-                imageModel.setPendingDeletion(index, true);
+                model.pendingDeletion = true;
+
                 if (wallpapersGrid.currentIndex === index) {
                     wallpapersGrid.currentIndex = (index + 1) % wallpapersGrid.rowCount();
                 }
@@ -105,19 +106,18 @@ KCM.GridDelegate {
                 return QPixmapItem.PreserveAspectFit;
             }
         }
-        QtControls2.CheckBox {
-            visible: configDialog.currentWallpaper == "org.kde.slideshow"
+
+        QQC2.CheckBox {
+            visible: configDialog.currentWallpaper === "org.kde.slideshow"
             anchors.right: parent.right
             anchors.top: parent.top
             checked: visible ? model.checked : false
-            onToggled: imageWallpaper.toggleSlide(model.path, checked)
+            onToggled: model.checked = checked
         }
     }
 
     onClicked: {
-        if (configDialog.currentWallpaper == "org.kde.image") {
-            cfg_Image = model.packageName || model.path;
-        }
+        cfg_Image = model.packageName || model.path;
         GridView.currentIndex = index;
     }
 }
