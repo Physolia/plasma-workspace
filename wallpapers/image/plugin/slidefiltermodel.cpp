@@ -6,9 +6,9 @@
 
 #include "slidefiltermodel.h"
 
-#include "backgroundlistmodel.h"
 #include "slidemodel.h"
 
+#include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
 #include <QRandomGenerator>
@@ -29,10 +29,19 @@ SlideFilterModel::SlideFilterModel(QObject *parent)
     connect(this, &SlideFilterModel::usedInConfigChanged, this, &SlideFilterModel::invalidateFilter);
 }
 
+QHash<int, QByteArray> SlideFilterModel::roleNames() const
+{
+    if (sourceModel()) {
+        return sourceModel()->roleNames();
+    }
+
+    return QSortFilterProxyModel::roleNames();
+}
+
 bool SlideFilterModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
     auto index = sourceModel()->index(source_row, 0, source_parent);
-    return m_usedInConfig || index.data(BackgroundListModel::ToggleRole).toBool();
+    return m_usedInConfig || index.data(ImageRoles::ToggleRole).toBool();
 }
 
 void SlideFilterModel::setSourceModel(QAbstractItemModel *sourceModel)
@@ -185,7 +194,7 @@ void SlideFilterModel::buildRandomOrder()
 
 QString SlideFilterModel::getLocalFilePath(const QModelIndex &modelIndex) const
 {
-    return modelIndex.data(BackgroundListModel::PathRole).toUrl().toLocalFile();
+    return modelIndex.data(ImageRoles::PathRole).toUrl().toLocalFile();
 }
 
 QString SlideFilterModel::getFilePathWithDir(const QFileInfo &fileInfo) const
