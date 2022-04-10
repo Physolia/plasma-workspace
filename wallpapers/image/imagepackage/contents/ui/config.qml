@@ -40,11 +40,15 @@ ColumnLayout {
     property var cfg_UncheckedSlidesDefault: []
 
     function saveConfig() {
-        imageWallpaper.commitDeletion();
+        if (configDialog.currentWallpaper === "org.kde.image") {
+            imageWallpaper.wallpaperModel.commitAddition();
+            imageWallpaper.wallpaperModel.commitDeletion();
+        }
     }
 
     Wallpaper.ImageBackend {
         id: imageWallpaper
+        renderingMode: (configDialog.currentWallpaper === "org.kde.image") ? Wallpaper.ImageBackend.SingleImage : Wallpaper.ImageBackend.SlideShow
         targetSize: {
             if (typeof plasmoid !== "undefined") {
                 return Qt.size(Plasmoid.width * Screen.devicePixelRatio, Plasmoid.height * Screen.devicePixelRatio)
@@ -388,11 +392,6 @@ ColumnLayout {
                     configFile: Kirigami.Settings.isMobile ? "wallpaper-mobile.knsrc" : "wallpaper.knsrc"
                     text: i18nd("plasma_wallpaper_org.kde.image", "Get New Wallpapers…")
                     viewMode: NewStuff.Page.ViewMode.Preview
-                    onEntryEvent: function(entry, event) {
-                        if (event == NewStuff.Entry.StatusChangedEvent) {
-                            imageWallpaper.newStuffFinished()
-                        }
-                    }
                 }
             }
         }
@@ -487,11 +486,6 @@ ColumnLayout {
             configFile: Kirigami.Settings.isMobile ? "wallpaper-mobile.knsrc" : "wallpaper.knsrc"
             text: i18nd("plasma_wallpaper_org.kde.image", "Get New Wallpapers…")
             viewMode: NewStuff.Page.ViewMode.Preview
-            onEntryEvent: function(entry, event) {
-                if (event == NewStuff.Entry.StatusChangedEvent) {
-                    imageWallpaper.newStuffFinished()
-                }
-            }
         }
     }
 }
