@@ -1,0 +1,6 @@
+File=regionandlangsettings_p.kcfg
+ClassName=RegionAndLangSettings_p
+Mutators=true
+DefaultValueGetters=true
+GenerateProperties=true
+ParentInConstructor=true

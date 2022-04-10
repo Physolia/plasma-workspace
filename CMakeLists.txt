@@ -167,14 +167,27 @@ if(${AppStreamQt_FOUND})
     set(HAVE_APPSTREAMQT true)
 endif()
 
-find_package(PackageKitQt${QT_MAJOR_VERSION})
-set_package_properties(PackageKitQt${QT_MAJOR_VERSION}
-        PROPERTIES DESCRIPTION "Software Manager integration"
-        TYPE OPTIONAL
-        PURPOSE "Used to install additional language packages on demand"
-        )
-if(PackageKitQt${QT_MAJOR_VERSION}_FOUND)
-    set(HAVE_PACKAGEKIT TRUE)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    # find out if the build system is Ubuntu based
+    cmake_host_system_information(RESULT DISTRO_NAME QUERY DISTRIB_ID)
+    cmake_host_system_information(RESULT DISTRO_ID_LIKE QUERY DISTRIB_ID_LIKE)
+    string(COMPARE EQUAL "ubuntu" "${DISTRO_NAME}" SYSTEM_UBUNTU_BASED)
+    foreach(NAME IN LISTS ${DISTRO_ID_LIKE})
+        string(TOLOWER ${NAME} NAME)
+        string(COMPARE EQUAL "ubuntu" "${NAME}" result)
+        if(result)
+            set(name_result ON)
+        endif()
+    endforeach()
+
+    option(UBUNTU_PACKAGEKIT "Install required package for language on Ubuntu Based systems, PackageKitQt5 required" ${SYSTEM_UBUNTU_BASED})
+    if(UBUNTU_PACKAGEKIT)
+        set(OS_UBUNTU TRUE)
+    endif()
+    option(GLIBC_LOCALE_GEN "Auto generate Glibc locale with locale-gen and /etc/locale.gen" ON)
+    if(GLIBC_LOCALE_GEN)
+        set(GLIBC_LOCALE TRUE)
+    endif()
 endif()
 
 
@@ -265,7 +278,7 @@ add_subdirectory(kcms)
 
 add_subdirectory(containmentactions)
 add_subdirectory(runners)
-add_subdirectory(applets)
+#add_subdirectory(applets)
 add_subdirectory(dataengines)
 add_subdirectory(wallpapers)
 
