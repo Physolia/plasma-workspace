@@ -35,7 +35,7 @@ private:
     bool editLocaleGen();
     void exitAfterTimeOut();
     bool shouldGenerate();
-    bool validateLocales(const QStringList &locales);
+    void processLocales(const QStringList &locales);
 
     std::atomic<bool> m_isGenerating = false;
     bool m_comment = false;
@@ -43,5 +43,4 @@ private:
     PolkitQt1::Authority *m_authority = nullptr;
     QStringList m_locales;
     QTimer m_timer;
-    QRegularExpression m_regex{QStringLiteral("^[a-z]+(_[A-Z]+(@[a-z]+)?)?$")};
 };

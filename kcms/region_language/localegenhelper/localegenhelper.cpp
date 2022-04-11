@@ -42,12 +42,12 @@ void LocaleGenHelper::enableLocales(const QStringList &locales)
     if (m_timer.isActive()) {
         m_timer.stop();
     }
-    if (m_isGenerating || !validateLocales(locales)) {
-        QString locale_string = locales.join(QStringLiteral(";"));
-        Q_EMIT error(i18n("Invalid locales: %1, please report on https://bugs.kde.org", locale_string));
+    if (m_isGenerating) {
+        Q_EMIT error(i18n("Another process is already running, please retry later"));
         exitAfterTimeOut();
         return;
     }
+    processLocales(locales);
     m_isGenerating = true;
     if (shouldGenerate()) {
         m_authority->checkAuthorization(QStringLiteral("org.kde.localegenhelper.enableLocales"),
@@ -167,7 +167,7 @@ void LocaleGenHelper::exitAfterTimeOut()
     m_timer.start(30s);
 }
 
-bool LocaleGenHelper::validateLocales(const QStringList &locales)
+void LocaleGenHelper::processLocales(const QStringList &locales)
 {
     QStringList processedLocales = locales;
     for (auto &locale : processedLocales) {
@@ -175,13 +175,8 @@ bool LocaleGenHelper::validateLocales(const QStringList &locales)
         if (locale == QStringLiteral("C")) {
             continue;
         }
-        auto result = m_regex.match(locale);
-        if (!result.hasMatch()) {
-            return false;
-        }
     }
     m_locales = std::move(processedLocales);
-    return true;
 }
 
 int main(int argc, char *argv[])
