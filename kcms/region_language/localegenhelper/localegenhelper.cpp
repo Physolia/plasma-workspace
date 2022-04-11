@@ -44,7 +44,7 @@ void LocaleGenHelper::enableLocales(const QStringList &locales)
     }
     if (m_isGenerating || !validateLocales(locales)) {
         QString locale_string = locales.join(QStringLiteral(";"));
-        Q_EMIT error(i18n("Invalid locales: %1", locale_string));
+        Q_EMIT error(i18n("Invalid locales: %1, please report on https://bugs.kde.org", locale_string));
         exitAfterTimeOut();
         return;
     }
