@@ -182,6 +182,6 @@ void LocaleGenHelper::processLocales(const QStringList &locales)
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    new LocaleGenHelper();
+    LocaleGenHelper generator;
     return app.exec();
 }
