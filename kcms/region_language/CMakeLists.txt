@@ -39,7 +39,7 @@ set(kcm_regionandlang_PART_SRCS
     localegeneratorbase.cpp
     regionandlangsettings.cpp
 )
-kconfig_add_kcfg_files(kcm_regionandlang_PART_SRCS regionandlangsettingsprivate.kcfgc GENERATE_MOC)
+kconfig_add_kcfg_files(kcm_regionandlang_PART_SRCS regionandlangsettingsbase.kcfgc GENERATE_MOC)
 
 if(GLIBC_LOCALE_GEN)
     set(kcm_regionandlang_PART_SRCS

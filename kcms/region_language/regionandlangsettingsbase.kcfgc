@@ -1,5 +1,5 @@
-File=regionandlangsettingsprivate.kcfg
-ClassName=RegionAndLangSettingsPrivate
+File=regionandlangsettingsbase.kcfg
+ClassName=RegionAndLangSettingsBase
 Mutators=true
 DefaultValueGetters=true
 GenerateProperties=true

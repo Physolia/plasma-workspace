@@ -6,9 +6,9 @@
 */
 #pragma once
 
-#include "regionandlangsettingsprivate.h"
+#include "regionandlangsettingsbase.h"
 
-class RegionAndLangSettings : public RegionAndLangSettingsPrivate
+class RegionAndLangSettings : public RegionAndLangSettingsBase
 {
     Q_OBJECT
 public:
