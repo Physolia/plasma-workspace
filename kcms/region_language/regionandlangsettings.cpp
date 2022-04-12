@@ -14,7 +14,7 @@ RegionAndLangSettings::RegionAndLangSettings(QObject *parent)
 
 bool RegionAndLangSettings::isDefaultSetting(SettingType setting) const
 {
-    bool result;
+    bool result = false;
     switch (setting) {
     case Lang:
         result = lang() == defaultLangValue();
@@ -37,10 +37,8 @@ bool RegionAndLangSettings::isDefaultSetting(SettingType setting) const
 
 QString RegionAndLangSettings::langWithFallback() const
 {
-    QString lang;
-    if (isDefaultSetting(Lang) && RegionAndLangSettings::lang().isEmpty()) {
-        lang = RegionAndLangSettings::lang();
-    } else {
+    QString lang = RegionAndLangSettings::lang();
+    if (!(isDefaultSetting(Lang) && RegionAndLangSettings::lang().isEmpty())) {
         QString envLang = qEnvironmentVariable("LANG");
         if (!envLang.isEmpty()) {
             lang = envLang;
@@ -53,7 +51,7 @@ QString RegionAndLangSettings::langWithFallback() const
 
 QString RegionAndLangSettings::LC_LocaleWithLang(SettingType setting) const
 {
-    QString result;
+    QString result = langWithFallback();
     bool isDefault = isDefaultSetting(setting);
     switch (setting) {
     case Numeric:
@@ -80,9 +78,5 @@ QString RegionAndLangSettings::LC_LocaleWithLang(SettingType setting) const
         Q_UNREACHABLE();
     }
 
-    if (result.isEmpty()) {
-        return langWithFallback();
-    } else {
-        return result;
-    }
+    return result;
 }
