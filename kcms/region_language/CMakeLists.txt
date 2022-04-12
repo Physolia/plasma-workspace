@@ -1,6 +1,6 @@
 #CMakeLists.txt
-#SPDX-FileCopyrightText: 2022 Han Young <hanyoung@protonmail.com>
-#SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-License-Identifier: BSD-2-Clause
+# SPDX-FileCopyrightText: 2022 Han Young <hanyoung@protonmail.com>
 
 # KI18N Translation Domain for this library
 add_definitions(-DTRANSLATION_DOMAIN=\"kcm_regionandlang\")
