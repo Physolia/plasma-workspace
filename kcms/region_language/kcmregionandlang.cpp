@@ -30,7 +30,12 @@ KCMRegionAndLang::KCMRegionAndLang(QObject *parent, const KPluginMetaData &data,
     : KQuickAddons::ManagedConfigModule(parent, data, args)
     , m_settings(new RegionAndLangSettings(this))
     , m_optionsModel(new OptionsModel(this))
+    , m_generator(LocaleGenerator::getGenerator())
 {
+    connect(m_generator, &LocaleGeneratorBase::userHasToGenerateManually, this, &KCMRegionAndLang::userHasToGenerateManually);
+    connect(m_generator, &LocaleGeneratorBase::success, this, &KCMRegionAndLang::generateFinished);
+    connect(m_generator, &LocaleGeneratorBase::needsFont, this, &KCMRegionAndLang::requireInstallFont);
+
     setQuickHelp(i18n("You can configure the formats used for time, dates, money and other numbers here."));
 
     qmlRegisterAnonymousType<RegionAndLangSettings>("kcmregionandlang", 1);
@@ -43,13 +48,6 @@ KCMRegionAndLang::KCMRegionAndLang(QObject *parent, const KPluginMetaData &data,
 void KCMRegionAndLang::save()
 {
     using SettingT = RegionAndLangSettings::SettingType;
-    // shouldn't have data race issue
-    if (!m_generator) {
-        m_generator = LocaleGenerator::getGenerator();
-        connect(m_generator, &LocaleGeneratorBase::userHasToGenerateManually, this, &KCMRegionAndLang::userHasToGenerateManually);
-        connect(m_generator, &LocaleGeneratorBase::success, this, &KCMRegionAndLang::generateFinished);
-        connect(m_generator, &LocaleGeneratorBase::needsFont, this, &KCMRegionAndLang::requireInstallFont);
-    }
 
     // assemble full locales in use
     QStringList locales;
