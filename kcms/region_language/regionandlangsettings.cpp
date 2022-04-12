@@ -8,7 +8,7 @@
 #include "kcm_regionandlang_debug.h"
 
 RegionAndLangSettings::RegionAndLangSettings(QObject *parent)
-    : RegionAndLangSettings_p(parent)
+    : RegionAndLangSettingsPrivate(parent)
 {
 }
 
