@@ -189,3 +189,4 @@ QString KCMRegionAndLang::toGlibcLocale(const QString &lang)
     return KDELocaleToGlibcLocale[lang];
 }
 #include "kcmregionandlang.moc"
+#include "moc_kcmregionandlang.cpp"

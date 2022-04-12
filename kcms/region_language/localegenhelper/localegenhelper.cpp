@@ -22,11 +22,11 @@ LocaleGenHelper::LocaleGenHelper()
 {
     new LocaleGenHelperAdaptor(this);
     if (!QDBusConnection::systemBus().registerService(QStringLiteral("org.kde.localegenhelper"))) {
-        qDebug() << "another helper is already running";
+        qWarning() << "another helper is already running";
         QCoreApplication::instance()->exit();
     }
     if (!QDBusConnection::systemBus().registerObject(QStringLiteral("/LocaleGenHelper"), this)) {
-        qDebug() << "unable to register service interface to dbus";
+        qWarning() << "unable to register service interface to dbus";
         QCoreApplication::instance()->exit();
     }
     connect(m_authority, &PolkitQt1::Authority::checkAuthorizationFinished, this, &LocaleGenHelper::enableLocalesPrivate);
