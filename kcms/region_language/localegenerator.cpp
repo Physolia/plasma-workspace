@@ -16,11 +16,11 @@
 LocaleGeneratorBase *LocaleGenerator::getGenerator()
 {
 #ifdef OS_UBUNTU
-    static auto *singleton = new LocaleGeneratorUbuntu();
+    static LocaleGeneratorUbuntu singleton;
 #elif GLIBC_LOCALE
-    static auto *singleton = new LocaleGeneratorGlibc();
+    static LocaleGeneratorGlibc singleton;
 #else
-    static auto *singleton = new LocaleGeneratorBase();
+    static LocaleGeneratorBase singleton;
 #endif
-    return singleton;
+    return &singleton;
 }
