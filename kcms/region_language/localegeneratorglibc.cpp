@@ -18,11 +18,6 @@ LocaleGeneratorGlibc::LocaleGeneratorGlibc(QObject *parent)
     connect(m_interface, &LocaleGenHelper::error, this, &LocaleGeneratorGlibc::userHasToGenerateManually);
 }
 
-QString LocaleGeneratorGlibc::supportMode() const
-{
-    return QStringLiteral("Glibc");
-}
-
 void LocaleGeneratorGlibc::localesGenerate(const QStringList &list)
 {
     qCDebug(KCM_REGIONANDLANG) << "enable locales: " << list;

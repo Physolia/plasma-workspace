@@ -9,10 +9,8 @@
 class LocaleGeneratorBase : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString supportMode READ supportMode CONSTANT)
 public:
     LocaleGeneratorBase(QObject *parent = nullptr);
-    virtual QString supportMode() const;
     virtual Q_INVOKABLE void localesGenerate(const QStringList &list);
 Q_SIGNALS:
     void success();

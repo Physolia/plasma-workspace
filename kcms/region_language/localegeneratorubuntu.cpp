@@ -18,11 +18,6 @@ LocaleGeneratorUbuntu::LocaleGeneratorUbuntu(QObject *parent)
 {
 }
 
-QString LocaleGeneratorUbuntu::supportMode() const
-{
-    return QStringLiteral("Ubuntu");
-}
-
 void LocaleGeneratorUbuntu::localesGenerate(const QStringList &list)
 {
     ubuntuInstall(list);

@@ -15,7 +15,6 @@ class LocaleGeneratorGlibc : public LocaleGeneratorBase
     Q_OBJECT
 public:
     LocaleGeneratorGlibc(QObject *parent = nullptr);
-    QString supportMode() const override;
     Q_INVOKABLE void localesGenerate(const QStringList &list) override;
 
 private:

@@ -14,7 +14,6 @@ class LocaleGeneratorUbuntu : public LocaleGeneratorBase
 public:
     LocaleGeneratorUbuntu(QObject *parent = nullptr);
     virtual ~LocaleGeneratorUbuntu() = default;
-    virtual QString supportMode() const override;
     virtual Q_INVOKABLE void localesGenerate(const QStringList &list) override;
 
 private:

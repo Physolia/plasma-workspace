@@ -11,10 +11,6 @@ LocaleGeneratorBase::LocaleGeneratorBase(QObject *parent)
     : QObject(parent)
 {
 }
-QString LocaleGeneratorBase::supportMode() const
-{
-    return QStringLiteral("manual");
-}
 
 void LocaleGeneratorBase::localesGenerate(const QStringList &list)
 {
